@@ -311,6 +311,7 @@ class AppDelegate: NSObject,
 
         // Setup our menu
         setupMenuImages()
+        setupWorkspaceMenuItems() // WORKSPACE: add workspace pane toggles to the View menu (WP-4)
 
         // Setup signal handlers
         setupSignals()
@@ -1142,6 +1143,33 @@ extension AppDelegate {
         self.menuFloatOnTop?.setImageIfDesired(systemSymbolName: "square.filled.on.square")
         self.menuFindParent?.setImageIfDesired(systemSymbolName: "text.page.badge.magnifyingglass")
     }
+
+    /// Add the workspace pane toggle items to the View menu programmatically // WORKSPACE:
+    /// (WP-4). Done in code instead of MainMenu.xib to keep the xib diff // WORKSPACE:
+    /// against upstream at zero. Items use nil targets so the actions travel // WORKSPACE:
+    /// the responder chain to the focused window's BaseTerminalController. // WORKSPACE:
+    private func setupWorkspaceMenuItems() { // WORKSPACE:
+        // The Terminal Inspector item lives at the bottom of the View menu. // WORKSPACE:
+        guard let viewMenu = menuTerminalInspector?.menu else { return } // WORKSPACE:
+
+        viewMenu.addItem(.separator()) // WORKSPACE:
+
+        let sidebarItem = NSMenuItem( // WORKSPACE:
+            title: "Toggle Workspace Sidebar", // WORKSPACE:
+            action: #selector(BaseTerminalController.toggleWorkspaceSidebar(_:)), // WORKSPACE:
+            keyEquivalent: "l") // WORKSPACE: ⌥⌘L (docs/06 §10-1: ⌘⇧L avoided pending Q; ⌥⌘ chosen)
+        sidebarItem.keyEquivalentModifierMask = [.command, .option] // WORKSPACE:
+        sidebarItem.setImageIfDesired(systemSymbolName: "sidebar.left") // WORKSPACE:
+        viewMenu.addItem(sidebarItem) // WORKSPACE:
+
+        let previewItem = NSMenuItem( // WORKSPACE:
+            title: "Toggle Workspace Preview", // WORKSPACE:
+            action: #selector(BaseTerminalController.toggleWorkspacePreview(_:)), // WORKSPACE:
+            keyEquivalent: "p") // WORKSPACE: ⌥⌘P (docs/06 §10-1 (a): ⌘⇧P is the command palette)
+        previewItem.keyEquivalentModifierMask = [.command, .option] // WORKSPACE:
+        previewItem.setImageIfDesired(systemSymbolName: "sidebar.right") // WORKSPACE:
+        viewMenu.addItem(previewItem) // WORKSPACE:
+    } // WORKSPACE:
 
     /// Sync all of our menu item keyboard shortcuts with the Ghostty configuration.
     private func syncMenuShortcuts(_ config: Ghostty.Config) {

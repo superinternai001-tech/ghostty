@@ -33,6 +33,9 @@ protocol TerminalViewModel: ObservableObject {
     /// The command palette state.
     var commandPaletteIsShowing: Bool { get set }
 
+    /// The workspace pane state (sidebar/preview visibility and widths, WP-4). // WORKSPACE:
+    var workspaceState: WorkspaceState { get } // WORKSPACE:
+
     /// The update overlay should be visible.
     var updateOverlayIsVisible: Bool { get }
 }
@@ -72,7 +75,7 @@ struct TerminalView<ViewModel: TerminalViewModel>: View {
             ErrorView()
         case .ready:
             ZStack {
-                HStack(spacing: 0) { // WORKSPACE: wrap terminal in HStack to attach right preview pane (WP-3)
+                WorkspaceLayoutView(workspace: viewModel.workspaceState) { // WORKSPACE: pane layout: sidebar/preview toggles + widths (WP-3/WP-4)
                 VStack(spacing: 0) {
                     // If we're running in debug mode we show a warning so that users
                     // know that performance will be degraded.
@@ -107,9 +110,7 @@ struct TerminalView<ViewModel: TerminalViewModel>: View {
                 }
                 // Ignore safe area to extend up in to the titlebar region if we have the "hidden" titlebar style
                 .ignoresSafeArea(.container, edges: ghostty.config.macosTitlebarStyle == .hidden ? .top : [])
-
-                PreviewPaneView() // WORKSPACE: right preview pane PoC (WP-3)
-                } // WORKSPACE: end HStack wrap (WP-3)
+                } // WORKSPACE: end workspace layout wrap (WP-3/WP-4)
 
                 if let surfaceView = lastFocusedSurface?.value {
                     TerminalCommandPaletteView(
