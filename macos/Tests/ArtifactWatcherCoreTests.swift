@@ -1,8 +1,6 @@
 import XCTest
 
-#if canImport(WatcherKit)
-@testable import WatcherKit
-#endif
+@testable import Ghostty
 
 /// Unit tests for the pure logic of the artifact watcher (docs/05 §2 UT,
 /// built with the whitelist method of docs/05 §5).

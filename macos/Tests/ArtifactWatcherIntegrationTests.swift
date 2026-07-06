@@ -1,8 +1,6 @@
 import XCTest
 
-#if canImport(WatcherKit)
-@testable import WatcherKit
-#endif
+@testable import Ghostty
 
 /// FSEvents-level tests for `ArtifactWatcher` against a real temporary
 /// directory: detection (create/update/delete), retargeting, and the abnormal
