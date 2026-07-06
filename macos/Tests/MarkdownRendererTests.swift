@@ -1,8 +1,5 @@
 import XCTest
-
-#if canImport(WorkspacePreview)
-@testable import WorkspacePreview
-#endif
+@testable import Ghostty
 
 /// WP-7 MarkdownRenderer の単体テスト。
 /// docs/05_test-plan.md §2（UT 観点）・§5（ホワイトリスト方式）に基づき、
