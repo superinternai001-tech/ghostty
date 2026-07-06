@@ -4,11 +4,10 @@ import SwiftUI
 ///
 /// For WP-3 this renders a fixed sample of "rendered Markdown" HTML to prove
 /// that WKWebView works inside the SwiftUI-wrapped terminal layout under the
-/// app sandbox. File selection and live rendering arrive in later WPs, and
-/// the fixed 320pt width becomes adjustable in WP-4.
+/// app sandbox. File selection and live rendering arrive in later WPs. Since
+/// WP-4 the width is driven by `WorkspaceState` (resizable + persisted).
 struct PreviewPaneView: View {
-    /// Fixed pane width for the PoC. Made adjustable in WP-4.
-    private static let paneWidth: CGFloat = 320
+    @ObservedObject var workspace: WorkspaceState
 
     var body: some View {
         VStack(spacing: 0) {
@@ -16,7 +15,7 @@ struct PreviewPaneView: View {
             Divider()
             PreviewWebView(html: Self.sampleHTML)
         }
-        .frame(width: Self.paneWidth)
+        .frame(width: workspace.previewWidth)
         .frame(maxHeight: .infinity)
         .background(Color(nsColor: .windowBackgroundColor))
     }

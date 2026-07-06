@@ -48,6 +48,10 @@ class BaseTerminalController: NSWindowController,
     /// This can be set to show/hide the command palette.
     @Published var commandPaletteIsShowing: Bool = false
 
+    /// Workspace pane state (sidebar/preview visibility and widths, WP-4). // WORKSPACE:
+    /// Lazy so we can disable workspace UI for the quick terminal (docs/01 §2). // WORKSPACE:
+    lazy var workspaceState = WorkspaceState(enabled: !(self is QuickTerminalController)) // WORKSPACE:
+
     /// Set if the terminal view should show the update overlay.
     @Published var updateOverlayIsVisible: Bool = false
 
@@ -1399,6 +1403,16 @@ class BaseTerminalController: NSWindowController,
         commandPaletteIsShowing.toggle()
     }
 
+    @IBAction func toggleWorkspaceSidebar(_ sender: Any?) { // WORKSPACE: FR-2 pane toggle (⌥⌘L, WP-4)
+        guard workspaceState.enabled else { return } // WORKSPACE:
+        workspaceState.sidebarVisible.toggle() // WORKSPACE:
+    } // WORKSPACE:
+
+    @IBAction func toggleWorkspacePreview(_ sender: Any?) { // WORKSPACE: FR-1 pane toggle (⌥⌘P, WP-4)
+        guard workspaceState.enabled else { return } // WORKSPACE:
+        workspaceState.previewVisible.toggle() // WORKSPACE:
+    } // WORKSPACE:
+
     @IBAction func find(_ sender: Any) {
         focusedSurface?.find(sender)
     }
@@ -1455,6 +1469,14 @@ extension BaseTerminalController: NSMenuItemValidation {
         switch item.action {
         case #selector(findHide):
             return focusedSurface?.searchState != nil
+
+        case #selector(toggleWorkspaceSidebar): // WORKSPACE: menu checkmark mirrors pane state (WP-4)
+            item.state = workspaceState.sidebarVisible ? .on : .off // WORKSPACE:
+            return workspaceState.enabled // WORKSPACE:
+
+        case #selector(toggleWorkspacePreview): // WORKSPACE:
+            item.state = workspaceState.previewVisible ? .on : .off // WORKSPACE:
+            return workspaceState.enabled // WORKSPACE:
 
         default:
             return true
